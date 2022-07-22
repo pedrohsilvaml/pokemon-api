@@ -22,7 +22,7 @@ func NewPokemonController() *PokemonController {
 	}
 }
 
-func (clt *PokemonController) GetPokemon(ctx *gin.Context) {
+func (ctl *PokemonController) GetPokemon(ctx *gin.Context) {
 	var query QueryParams
 	err := ctx.ShouldBindQuery(&query)
 
@@ -33,7 +33,7 @@ func (clt *PokemonController) GetPokemon(ctx *gin.Context) {
 		return
 	}
 
-	response, err := clt.service.GetPokemon(query.Name)
+	response, err := ctl.service.GetPokemon(query.Name)
 
 	if err == nil {
 		ctx.JSON(http.StatusOK, response)
@@ -41,4 +41,9 @@ func (clt *PokemonController) GetPokemon(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusPartialContent, response)
+}
+
+func (ctl *PokemonController) GetInitialPokemons(ctx *gin.Context) {
+	response, _ := ctl.service.GetInitialPokemons()
+	ctx.JSON(http.StatusOK, response)
 }

@@ -11,11 +11,11 @@ func NewPokemonService() *PokemonService {
 }
 
 type GetPokemonResponse struct {
-	Data    interface{}
-	Partial bool
+	Data    interface{} `json:"data"`
+	Partial bool        `json:"partial"`
 }
 
-func (ps *PokemonService) GetPokemon(name string) (*GetPokemonResponse, error) {
+func (PokemonService) GetPokemon(name string) (*GetPokemonResponse, error) {
 	response, err := poke_api.GetPokemon(name)
 	partial := (err != nil)
 	data := response.Data
@@ -28,4 +28,20 @@ func (ps *PokemonService) GetPokemon(name string) (*GetPokemonResponse, error) {
 		Data:    data,
 		Partial: partial,
 	}, err
+}
+
+func (ps PokemonService) GetInitialPokemons() (*[]*GetPokemonResponse, error) {
+	pokemon_names := getInitialPokemons()
+	pokemons := make([]*GetPokemonResponse, len(pokemon_names))
+
+	for i, name := range pokemon_names {
+		response, _ := ps.GetPokemon(name)
+		pokemons[i] = response
+	}
+
+	return &pokemons, nil
+}
+
+func getInitialPokemons() []string {
+	return []string{"charmander", "squirtle", "bulbasaur"}
 }

@@ -24,6 +24,7 @@ func (sv *Server) Setup() {
 	pokemonClt := pokemons.NewPokemonController()
 
 	sv.Engine.GET("/pokemon", pokemonClt.GetPokemon)
+	sv.Engine.GET("/pokemons/initial", pokemonClt.GetInitialPokemons)
 }
 
 func (sv *Server) Start() {
