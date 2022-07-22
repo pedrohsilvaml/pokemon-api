@@ -3,8 +3,6 @@ package poke_api
 import (
 	"encoding/json"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 const BaseUri = "https://pokeapi.co/api/v2"
@@ -44,22 +42,22 @@ type PokeAPIData struct {
 }
 
 type HttpResponse struct {
-	Data       interface{}
+	Data       *PokeAPIData
 	StatusCode int
 }
 
 func GetPokemon(name string) (*HttpResponse, error) {
 	url := buildUrl("/pokemon/" + name)
-	req, _ := http.Get(url)
+	req, err := http.Get(url)
 
-	var data PokeAPIData
-	err := json.NewDecoder(req.Body).Decode(&data)
-
-	if err != nil || data.ID == 0 {
-		err = errors.New("Pokemon not found")
+	if err != nil {
+		return nil, err
 	}
 
-	return &HttpResponse{Data: data, StatusCode: req.StatusCode}, err
+	var data PokeAPIData
+	err = json.NewDecoder(req.Body).Decode(&data)
+
+	return &HttpResponse{Data: &data, StatusCode: req.StatusCode}, err
 }
 
 func buildUrl(path string) string {
