@@ -1,6 +1,8 @@
 package pokemons
 
 import (
+	"sync"
+
 	"github.com/pedrohsilvaml/pokemon-api/internal/client/poke_api"
 )
 
@@ -30,16 +32,41 @@ func (PokemonService) GetPokemon(name string) (*GetPokemonResponse, error) {
 	}, err
 }
 
-func (ps PokemonService) GetInitialPokemons() (*[]*GetPokemonResponse, error) {
+func (s PokemonService) GetInitialPokemons() []GetPokemonResponse {
 	pokemon_names := getInitialPokemons()
-	pokemons := make([]*GetPokemonResponse, len(pokemon_names))
+	jobs := len(pokemon_names)
+	var pokemons []GetPokemonResponse
 
-	for i, name := range pokemon_names {
-		response, _ := ps.GetPokemon(name)
-		pokemons[i] = response
+	channel := make(chan GetPokemonResponse, jobs)
+	var waitGroup sync.WaitGroup
+
+	for _, name := range pokemon_names {
+		waitGroup.Add(1)
+		go s.getPokemonJob(name, channel, &waitGroup)
+	}
+	waitGroup.Wait()
+	close(channel)
+
+	for pokemonResponse := range channel {
+		pokemons = append(pokemons, pokemonResponse)
 	}
 
-	return &pokemons, nil
+	return pokemons
+}
+
+func (s PokemonService) getPokemonJob(name string, channel chan GetPokemonResponse, waitGroup *sync.WaitGroup) {
+	defer waitGroup.Done()
+	defer s.getPokemonJobRecover(name, channel)
+
+	response, _ := s.GetPokemon(name)
+	channel <- *response
+}
+
+func (PokemonService) getPokemonJobRecover(name string, channel chan GetPokemonResponse) {
+	if r := recover(); r != nil {
+		data := &poke_api.PokeAPIData{Name: name}
+		channel <- GetPokemonResponse{Data: data, Partial: true}
+	}
 }
 
 func getInitialPokemons() []string {

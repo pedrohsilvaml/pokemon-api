@@ -39,11 +39,18 @@ func (ctl *PokemonController) GetPokemon(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, response)
 		return
 	}
-
 	ctx.JSON(http.StatusPartialContent, response)
 }
 
 func (ctl *PokemonController) GetInitialPokemons(ctx *gin.Context) {
-	response, _ := ctl.service.GetInitialPokemons()
+	response := ctl.service.GetInitialPokemons()
+
+	for _, pokemonResponse := range response {
+		if pokemonResponse.Partial {
+			ctx.JSON(http.StatusPartialContent, response)
+			return
+		}
+	}
+
 	ctx.JSON(http.StatusOK, response)
 }
