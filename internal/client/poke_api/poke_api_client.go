@@ -46,8 +46,14 @@ type HttpResponse struct {
 	StatusCode int
 }
 
-func GetPokemon(name string) (*HttpResponse, error) {
-	url := buildUrl("/pokemon/" + name)
+type PokeAPIClient struct{}
+
+func NewPokeAPIClient() PokeAPIClient {
+	return PokeAPIClient{}
+}
+
+func (client PokeAPIClient) GetPokemon(name string) (*HttpResponse, error) {
+	url := client.buildUrl("/pokemon/" + name)
 	req, err := http.Get(url)
 
 	if err != nil {
@@ -60,6 +66,6 @@ func GetPokemon(name string) (*HttpResponse, error) {
 	return &HttpResponse{Data: &data, StatusCode: req.StatusCode}, err
 }
 
-func buildUrl(path string) string {
+func (client PokeAPIClient) buildUrl(path string) string {
 	return BaseUri + path
 }

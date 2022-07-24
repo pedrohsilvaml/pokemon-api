@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	service "github.com/pedrohsilvaml/pokemon-api/internal/service/pokemons"
+	poke_service "github.com/pedrohsilvaml/pokemon-api/internal/service/pokemons"
 )
 
 type QueryParams struct {
@@ -13,13 +13,11 @@ type QueryParams struct {
 }
 
 type PokemonController struct {
-	service service.PokemonService
+	Service *poke_service.PokemonService
 }
 
-func NewPokemonController() *PokemonController {
-	return &PokemonController{
-		service: *service.NewPokemonService(),
-	}
+func NewPokemonController(s *poke_service.PokemonService) *PokemonController {
+	return &PokemonController{Service: s}
 }
 
 func (ctl *PokemonController) GetPokemon(ctx *gin.Context) {
@@ -33,7 +31,7 @@ func (ctl *PokemonController) GetPokemon(ctx *gin.Context) {
 		return
 	}
 
-	response, err := ctl.service.GetPokemon(query.Name)
+	response, err := ctl.Service.GetPokemon(query.Name)
 
 	if err == nil {
 		ctx.JSON(http.StatusOK, response)
@@ -43,7 +41,7 @@ func (ctl *PokemonController) GetPokemon(ctx *gin.Context) {
 }
 
 func (ctl *PokemonController) GetInitialPokemons(ctx *gin.Context) {
-	response := ctl.service.GetInitialPokemons()
+	response := ctl.Service.GetInitialPokemons()
 
 	for _, pokemonResponse := range response {
 		if pokemonResponse.Partial {

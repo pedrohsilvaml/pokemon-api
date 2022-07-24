@@ -6,10 +6,12 @@ import (
 	"github.com/pedrohsilvaml/pokemon-api/internal/client/poke_api"
 )
 
-type PokemonService struct{}
+type PokemonService struct {
+	Client poke_api.PokeAPIClient
+}
 
-func NewPokemonService() *PokemonService {
-	return &PokemonService{}
+func NewPokemonService(client poke_api.PokeAPIClient) *PokemonService {
+	return &PokemonService{Client: client}
 }
 
 type GetPokemonResponse struct {
@@ -17,8 +19,8 @@ type GetPokemonResponse struct {
 	Partial bool        `json:"partial"`
 }
 
-func (PokemonService) GetPokemon(name string) (*GetPokemonResponse, error) {
-	response, err := poke_api.GetPokemon(name)
+func (s PokemonService) GetPokemon(name string) (*GetPokemonResponse, error) {
+	response, err := s.Client.GetPokemon(name)
 	partial := (err != nil)
 	data := response.Data
 
