@@ -23,14 +23,19 @@ func NewServer(cfg *Config) *Server {
 func (sv *Server) Setup() {
 	sv.Engine = gin.Default()
 
-	pokeAPIClient := poke_api.NewPokeAPIClient()
-	pokemonService := poke_service.NewPokemonService(pokeAPIClient)
-	pokemonClt := pokemons.NewPokemonController(pokemonService)
+	pokemonCtl := BuildPokemonController()
 
-	sv.Engine.GET("/pokemon", pokemonClt.GetPokemon)
-	sv.Engine.GET("/pokemons/initial", pokemonClt.GetInitialPokemons)
+	sv.Engine.GET("/pokemon", pokemonCtl.GetPokemon)
+	sv.Engine.GET("/pokemons/initial", pokemonCtl.GetInitialPokemons)
 }
 
 func (sv *Server) Start() {
 	sv.Engine.Run()
+}
+
+func BuildPokemonController() *pokemons.PokemonController {
+	pokeAPIClient := poke_api.NewPokeAPIClient()
+	pokemonService := poke_service.NewPokemonService(pokeAPIClient)
+
+	return pokemons.NewPokemonController(pokemonService)
 }
