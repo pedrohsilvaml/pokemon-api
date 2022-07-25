@@ -2,6 +2,7 @@ package poke_api
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -66,14 +67,19 @@ func NewPokeAPIClient() PokeAPIClient {
 
 func (client PokeAPIClient) GetPokemon(name string) (*HttpResponse, error) {
 	url := client.buildUrl("/pokemon/" + name)
-	req, err := http.Get(url)
 
+	req, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		return nil, err
 	}
 
 	var data PokeAPIData
-	err = json.NewDecoder(req.Body).Decode(&data)
+	err = json.Unmarshal(body, &data)
 
 	return &HttpResponse{Data: &data, StatusCode: req.StatusCode}, err
 }
