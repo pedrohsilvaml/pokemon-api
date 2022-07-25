@@ -33,11 +33,11 @@ func (ctl *PokemonController) GetPokemon(ctx *gin.Context) {
 
 	response, err := ctl.Service.GetPokemon(query.Name)
 
-	if err == nil {
-		ctx.JSON(http.StatusOK, response)
+	if err != nil {
+		ctx.JSON(http.StatusPartialContent, response)
 		return
 	}
-	ctx.JSON(http.StatusPartialContent, response)
+	ctx.JSON(http.StatusOK, response)
 }
 
 func (ctl *PokemonController) GetInitialPokemons(ctx *gin.Context) {

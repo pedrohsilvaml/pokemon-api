@@ -35,14 +35,14 @@ func (s PokemonService) GetPokemon(name string) (*GetPokemonResponse, error) {
 }
 
 func (s PokemonService) GetInitialPokemons() []GetPokemonResponse {
-	pokemon_names := getInitialPokemons()
-	jobs := len(pokemon_names)
+	pokemonNames := getInitialPokemons()
+	jobs := len(pokemonNames)
 	var pokemons []GetPokemonResponse
 
 	channel := make(chan GetPokemonResponse, jobs)
 	var waitGroup sync.WaitGroup
 
-	for _, name := range pokemon_names {
+	for _, name := range pokemonNames {
 		waitGroup.Add(1)
 		go s.getPokemonJob(name, channel, &waitGroup)
 	}
