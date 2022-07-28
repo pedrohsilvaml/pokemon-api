@@ -2,6 +2,7 @@ package poke_api
 
 import (
 	"encoding/json"
+	"errors"
 
 	"github.com/pedrohsilvaml/pokemon-api/pkg/request"
 )
@@ -23,9 +24,12 @@ func (client PokeAPIClient) GetPokemon(name string) (*PokeAPIData, error) {
 		return nil, err
 	}
 
+	if response.StatusCode != 200 {
+		return &PokeAPIData{Name: name}, errors.New("pokemon not found")
+	}
+
 	var data PokeAPIData
 	err = json.Unmarshal(response.Body, &data)
-
 	return &data, err
 }
 
