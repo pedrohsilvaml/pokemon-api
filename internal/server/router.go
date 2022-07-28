@@ -34,7 +34,7 @@ func (sv *Server) Start() {
 }
 
 func BuildPokemonController() *pokemons.PokemonController {
-	pokeAPIClient := poke_api.NewPokeAPIClient()
+	pokeAPIClient := poke_api.NewClient()
 	pokemonService := poke_service.NewPokemonService(pokeAPIClient)
 
 	return pokemons.NewPokemonController(pokemonService)

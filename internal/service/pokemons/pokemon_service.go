@@ -20,16 +20,15 @@ type GetPokemonResponse struct {
 }
 
 func (s PokemonService) GetPokemon(name string) (*GetPokemonResponse, error) {
-	response, err := s.Client.GetPokemon(name)
+	pokeData, err := s.Client.GetPokemon(name)
 	partial := (err != nil)
-	data := response.Data
 
 	if partial {
-		data = &poke_api.PokeAPIData{Name: name}
+		pokeData = &poke_api.PokeAPIData{Name: name}
 	}
 
 	return &GetPokemonResponse{
-		Data:    data,
+		Data:    pokeData,
 		Partial: partial,
 	}, err
 }
