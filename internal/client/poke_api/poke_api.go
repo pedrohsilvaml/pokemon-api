@@ -1,5 +1,9 @@
 package poke_api
 
+type PokeAPI interface {
+	GetPokemon(string) (*PokeAPIData, error)
+}
+
 type PokeAPIData struct {
 	ID                     int         `json:"id,omitempty"`
 	Name                   string      `json:"name,omitempty"`

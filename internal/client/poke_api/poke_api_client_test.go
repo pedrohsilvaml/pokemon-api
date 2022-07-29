@@ -3,14 +3,14 @@ package poke_api
 import "testing"
 
 type getPokemonTest struct {
-	Name string
 	ID   int
+	Name string
 }
 
 var getPokemonTests = []getPokemonTest{
-	{"charmander", 4},
-	{"xxx", 0},
-	{"", 0},
+	{ID: 4, Name: "charmander"},
+	{ID: 0, Name: "xxx"},
+	{ID: 0, Name: ""},
 }
 
 func TestGetPokemonTableDriven(t *testing.T) {
@@ -20,10 +20,10 @@ func TestGetPokemonTableDriven(t *testing.T) {
 		response, err := client.GetPokemon(test.Name)
 
 		if test.ID != 0 && err != nil {
-			t.Errorf("[GetPokemon] Error: %s\n for test: %v", err, test)
+			t.Errorf("[poke_api_client] Error: %s\n for test: %v", err, test)
 		}
 		if response.ID != test.ID {
-			t.Errorf("[GetPokemon] Error: invalid pokemon for test: %v", test)
+			t.Errorf("[poke_api_client] Error: invalid pokemon for test: %v", test)
 		}
 	}
 }
