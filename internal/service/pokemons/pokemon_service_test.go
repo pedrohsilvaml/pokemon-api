@@ -54,3 +54,36 @@ func TestGetPokemonTableDriven(t *testing.T) {
 		}
 	}
 }
+
+var getInitialPokemonsTestResponse = []poke_api.PokeAPIData{
+	{ID: 4, Name: "charmander"},
+	{ID: 7, Name: "squirtle"},
+	{ID: 1, Name: "bulbasaur"},
+}
+
+func TestGetInitialPokemons(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockPokeClient := mock.NewMockPokeAPI(ctrl)
+	gomock.InAnyOrder(mockPokeClient.EXPECT().GetPokemon(getInitialPokemonsTestResponse[0].Name).Return(&getInitialPokemonsTestResponse[0], nil))
+	gomock.InAnyOrder(mockPokeClient.EXPECT().GetPokemon(getInitialPokemonsTestResponse[1].Name).Return(&getInitialPokemonsTestResponse[1], nil))
+	gomock.InAnyOrder(mockPokeClient.EXPECT().GetPokemon(getInitialPokemonsTestResponse[2].Name).Return(&getInitialPokemonsTestResponse[2], nil))
+
+	service := NewPokemonService(mockPokeClient)
+	response := service.GetInitialPokemons()
+
+	for _, pokeData := range response {
+		if pokeData.Data.ID == 0 {
+			t.Errorf("[pokemon_service] Error: expect ID to be present but got blank for data: %v", pokeData.Data)
+		}
+
+		if len(pokeData.Data.Name) == 0 {
+			t.Errorf("[pokemon_service] Error: expect name to be present but got blank for data: %v", pokeData.Data)
+		}
+
+		if pokeData.Partial {
+			t.Errorf("[pokemon_service] Error: expect partial to be false but got true for data: %v", pokeData.Data)
+		}
+	}
+}
