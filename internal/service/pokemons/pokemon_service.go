@@ -7,16 +7,16 @@ import (
 )
 
 type PokemonService struct {
-	Client poke_api.PokeAPIClient
+	Client poke_api.PokeAPI
 }
 
-func NewPokemonService(client poke_api.PokeAPIClient) *PokemonService {
+func NewPokemonService(client poke_api.PokeAPI) *PokemonService {
 	return &PokemonService{Client: client}
 }
 
 type GetPokemonResponse struct {
-	Data    interface{} `json:"data"`
-	Partial bool        `json:"partial"`
+	Data    *poke_api.PokeAPIData `json:"data"`
+	Partial bool                  `json:"partial"`
 }
 
 func (s PokemonService) GetPokemon(name string) (*GetPokemonResponse, error) {
